@@ -1,0 +1,7 @@
+DTOInterfaces\EmployeeInterface.class
+com\mycompany\frontendconnectionmaven\JakartaRestConfiguration.class
+bdconnect\DBConnect.class
+DTOFolders\Employee.class
+com\mycompany\frontendconnectionmaven\resources\JakartaEE11Resource.class
+DTOImplementation\EmployeeImplementation.class
+com\biit\serve\EmployeeServlet.class

@@ -54,11 +54,11 @@ public class JakartaEE11Resource {
     public Response sendEmployee(Employee em) {
         try {
             // 1. Validate that the incoming object is not null first
-            if (em == null) {
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Invalid employee data: Request body is missing or empty.")
-                        .build();
-            }
+//            if (em == null) {
+//                return Response.status(Response.Status.BAD_REQUEST)
+//                        .entity("Invalid employee data: Request body is missing or empty.")
+//                        .build();
+//            }
 
             EmployeeImplementation empImpl = new EmployeeImplementation();
             empImpl.sendEmployee(em);
@@ -97,17 +97,27 @@ public class JakartaEE11Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateEmployee(@PathParam("id") String id, Employee emp) throws SQLException {
         try {
+            // 1. Prevent NullPointerException if body is missing
+            if (emp == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Invalid employee data: Request body is missing.")
+                        .build();
+            }
+
             EmployeeImplementation empImpl = new EmployeeImplementation();
             emp.setId(id);
-            empImpl.updateEmployee(id, emp);
 
-            if (emp != null) {
+            // 2. Assume updateEmployee returns a boolean (true if updated, false if ID not found)
+            boolean isUpdated = empImpl.updateEmployee(id, emp);
+
+            if (isUpdated) {
                 return Response.ok(emp).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Unable to update this employee: " + id)
+                        .entity("Unable to update: Employee with ID " + id + " not found.")
                         .build();
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             return Response.serverError()
@@ -118,7 +128,7 @@ public class JakartaEE11Resource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllEmployee(List<Employee> emp) {
+    public Response getAllEmployee() {
         try {
             EmployeeImplementation empImpl = new EmployeeImplementation();
             List<Employee> lisEmp = empImpl.getAllEmployee();

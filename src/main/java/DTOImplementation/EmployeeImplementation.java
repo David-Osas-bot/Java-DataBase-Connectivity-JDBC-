@@ -27,7 +27,7 @@ public class EmployeeImplementation implements EmployeeInterface {
     ResultSet result;
     String sqlSend = "insert into employee (empid, firstname, lastname, age) values(?,?,?,?)";
     String sqlGetEmployee = "select * from employee where empid = ?";
-    String sqlUpdate = "update employee set firstname = ?, lastname = ?, age = ? where id = ?";
+    String sqlUpdate = "update employee set firstname = ?, lastname = ?, age = ? where empid = ?";
     String sqlDelete = "delete from employee where empid = ?";
     String sqlGetAll = "select * from employee";
 
@@ -75,18 +75,21 @@ public class EmployeeImplementation implements EmployeeInterface {
 
     @Override
     public boolean updateEmployee(String id, Employee em) {
-        try {
-            sta = con.prepareStatement(sqlUpdate);
-            sta.setString(1, id);
-            sta.setString(2, em.getFirstname());
-            sta.setString(3, em.getLastname());
-            sta.setInt(4, em.getAge());
+        try ( PreparedStatement sta = con.prepareStatement(sqlUpdate)) {
 
-            sta.executeUpdate();
+            sta.setString(1, em.getFirstname());
+            sta.setString(2, em.getLastname());
+            sta.setInt(3, em.getAge());
+            sta.setString(4, id);
+
+            int rowsUpdated = sta.executeUpdate();
+
+            return rowsUpdated > 0;
+
         } catch (SQLException sq) {
             sq.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     @Override
